@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #6d28a1, #ff5f6d);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            font-size: 24px;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 26px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .info {
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .info p {
+            font-size: 16px;
+            padding: 5px 0;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            background: linear-gradient(90deg, #7b2cbf, #ff6f61);
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">DAILY AFFIRMATION</div>
+        <h1>Profile</h1>
+        <div class="info">
+            <p><strong>Name:</strong> John Doe</p>
+            <p><strong>Email:</strong> johndoe@example.com</p>
+            <p><strong>Member Since:</strong> January 2022</p>
+            <p><strong>Total Affirmations Submitted:</strong> 15</p>
+        </div>
+        <div class="button-container">
+            <button class="btn" onclick="window.location.href='/edit-profile'">Edit Profile</button>
+            <button class="btn" onclick="window.location.href='/logout'">Logout</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suggest an Affirmation</title>
+    <style>
+        /* Inline styling for simplicity, move to CSS file for better organization */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(90deg, #7b2cbf, #ff6f61);
+            background-color: #f4f4f9;
+            margin: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .container h1 {
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Suggest an Affirmation</h1>
+        <form action="{% url 'suggest_affirmation' %}" method="post">
+            {% csrf_token %}
+
+            <!-- Affirmation Text Input -->
+            <div class="form-group">
+                <label for="affirmation-text">Affirmation</label>
+                <textarea name="affirmation_text" id="affirmation-text" required placeholder="Write your affirmation here..."></textarea>
+            </div>
+
+            <!-- Category Select Dropdown -->
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select name="category" id="category" required>
+                    <option value="" disabled selected>Select a category</option>
+                    <option value="Motivation">Motivation</option>
+                    <option value="Positivity">Positivity</option>
+                    <option value="Growth">Growth</option>
+                    <option value="Self-Care">Self-Care</option>
+                    <option value="Mindfulness">Mindfulness</option>
+                    <option value="Confidence">Confidence</option>
+                    <option value="Gratitude">Gratitude</option>
+                    
+                    <!-- Add more categories as needed -->
+                </select>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="submit-btn">Submit Affirmation</button>
+        </form>
+    </div>
+</body>
+</html>

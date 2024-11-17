@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Affirmations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(90deg, #7b2cbf, #ff6f61);
+            color: white;
+            text-align: center;
+            flex-direction: column;
+        }
+
+        .search-container {
+            width: 80%;
+            max-width: 600px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 10px;
+        }
+
+        .filter-button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            font-size: 14px;
+            color: white;
+            background: #ff6f61;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .results-container {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .affirmation-box {
+            width: 75%;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            text-align: left;
+            color: white;
+        }
+
+        .affirmation-box h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .affirmation-box p {
+            font-size: 16px;
+        }
+
+        .rating {
+            font-size: 14px;
+            color: #ffd700;
+        }
+
+        .category-dropdown {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 10px;
+            background: white;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <h1>Search Affirmations</h1>
+        <form method="GET" action="{% url 'search' %}">
+            <input type="text" name="query" placeholder="Search affirmations..." class="search-bar">
+            
+            <!-- Category Dropdown -->
+            <select name="category" class="category-dropdown">
+                <option value="">All Categories</option>
+                <option value="Motivation">Motivation</option>
+                <option value="Positivity">Positivity</option>
+                <option value="Growth">Growth</option>
+                <option value="Self-Care">Self-Care</option>
+                <option value="Mindfulness">Mindfulness</option>
+                <option value="Confidence">Confidence</option>
+                <option value="Gratitude">Gratitude</option>
+            </select>
+            
+            <button type="submit" class="filter-button">Search</button>
+        </form>
+    </div>
+
+    <div class="results-container">
+        {% if affirmations %}
+            {% for affirmation in affirmations %}
+                <div class="affirmation-box">
+                    <h3>{{ affirmation.text }}</h3>
+                    <p class="rating">Rating: {{ affirmation.rating }}</p>
+                    <p>Category: {{ affirmation.category }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No results found.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
