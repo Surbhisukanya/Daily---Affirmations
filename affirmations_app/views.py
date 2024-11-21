@@ -6,12 +6,12 @@ from affirmations_app.models import Affirmation
 from affirmations_app import templates
 import random
 
-def home(request):
-    #affirmation = Affirmation.objects.order_by('?').first()  # Random affirmation
-    #return render(request, 'home.html', {'affirmation': affirmation})
-    return render(request, 'home.html')
-    
 def home_view(request):
+    affirmation = Affirmation.objects.order_by('?').first()  # Random affirmation
+    return render(request, 'home.html', {'affirmation': affirmation})
+    #return render(request, 'home.html')
+    
+def home(request):
     # Fetch a random affirmation from the database
     daily_affirmation = random.choice(Affirmation.objects.all())
     context = {
