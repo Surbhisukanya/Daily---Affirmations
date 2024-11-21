@@ -11,4 +11,5 @@ urlpatterns = [
     path('search/', views.search_affirmations, name='search'),
     path('suggest/', views.suggest_affirmation, name='suggest_affirmation'),
     path('profile/', views.profile, name='profile'),
+    path('rate/<int:affirmation_id>/', views.rate_affirmation, name='rate_affirmation'),  # New URL pattern for rating
 ]

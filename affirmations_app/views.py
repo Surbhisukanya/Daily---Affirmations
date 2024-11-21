@@ -24,7 +24,7 @@ def home(request):
             affirmation = Affirmation.objects.create(
                 affirmation="I am capable of achieving anything I set my mind to.",
                 category="Motivation",
-                rating=5
+                rating=4  # Set default rating to 4
             )
         
         context['affirmation'] = affirmation
@@ -34,12 +34,35 @@ def home(request):
         # Provide a fallback affirmation
         context['affirmation'] = {
             'affirmation': "Welcome to Daily Affirmations!",
-            'rating': 5,
+            'rating': 4,  # Set default rating to 4
             'category': 'General'
         }
         messages.error(request, "There was an issue loading the affirmation. Please try again later.")
     
     return render(request, 'home.html', context)
+
+@login_required
+def rate_affirmation(request, affirmation_id):
+    if request.method == 'POST':
+        affirmation = get_object_or_404(Affirmation, id=affirmation_id)
+        try:
+            # Get rating from POST data, default to 4 if not provided
+            rating = int(request.POST.get('rating', 4))
+            # Ensure rating is between 1 and 5
+            rating = max(1, min(5, rating))
+            
+            # Update the affirmation's rating
+            affirmation.rating = rating
+            affirmation.save()
+            
+            messages.success(request, "Rating submitted successfully!")
+        except ValueError:
+            messages.error(request, "Invalid rating value.")
+        except Exception as e:
+            logger.error(f"Error in rate_affirmation view: {str(e)}")
+            messages.error(request, "There was an error submitting your rating.")
+    
+    return redirect('home')
     
 def login_view(request):
     if request.method == 'POST':
@@ -113,11 +136,12 @@ def suggest_affirmation(request):
         affirmation_text = request.POST.get('affirmation_text')
         category = request.POST.get('category')
         
-        # Save the affirmation
+        # Save the affirmation with default rating of 4
         affirmation = Affirmation.objects.create(
             affirmation=affirmation_text,
             category=category,
-            user=request.user
+            user=request.user,
+            rating=4  # Set default rating to 4
         )
         messages.success(request, "Your affirmation has been submitted!")
         return redirect('home')
