@@ -21,6 +21,7 @@
             color: white;
             text-align: center;
             flex-direction: column;
+            padding-top: 80px;
         }
 
         header {
@@ -30,11 +31,17 @@
             width: 100%;
             padding: 20px;
             background: rgba(0, 0, 0, 0.2);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
         }
 
         .logo {
             font-size: 24px;
             font-weight: bold;
+            text-decoration: none;
+            color: white;
         }
 
         .nav {
@@ -54,34 +61,60 @@
 
         .search-container {
             width: 80%;
-            max-width: 600px;
+            max-width: 800px;
             margin-top: 30px;
             text-align: center;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            border-radius: 10px;
         }
 
         .search-bar {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             font-size: 16px;
             border-radius: 8px;
             border: none;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .search-bar::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .category-dropdown {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .category-dropdown option {
+            background: #333;
+            color: white;
         }
 
         .filter-button {
-            margin-top: 10px;
-            padding: 8px 16px;
-            font-size: 14px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
             color: white;
-            background: #ff6f61;
+            padding: 12px 24px;
+            font-size: 16px;
             border: none;
-            border-radius: 8px;
+            border-radius: 25px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: transform 0.2s;
+            width: 100%;
+            max-width: 200px;
         }
 
         .filter-button:hover {
-            background: #ff5f4f;
+            transform: scale(1.05);
         }
 
         .results-container {
@@ -89,49 +122,38 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
-            padding: 0 20px;
+            width: 80%;
+            max-width: 800px;
+            gap: 15px;
         }
 
         .affirmation-box {
             width: 100%;
-            max-width: 600px;
-            padding: 15px;
-            margin: 10px 0;
+            padding: 20px;
             background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 10px;
             text-align: left;
-            color: white;
         }
 
         .affirmation-box h3 {
-            font-size: 20px;
-            margin-bottom: 10px;
+            font-size: 24px;
+            margin-bottom: 15px;
         }
 
         .affirmation-box p {
             font-size: 16px;
+            margin: 5px 0;
         }
 
         .rating {
-            font-size: 14px;
             color: #ffd700;
-        }
-
-        .category-dropdown {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 8px;
-            border: none;
-            margin-bottom: 10px;
-            background: white;
-            color: #333;
+            font-weight: bold;
         }
 
         h1 {
             margin-bottom: 20px;
+            font-size: 32px;
         }
     </style>
 </head>
@@ -143,6 +165,7 @@
             {% if user.is_authenticated %}
                 <a href="{% url 'profile' %}">Profile</a>
                 <a href="{% url 'suggest_affirmation' %}">Suggest</a>
+                <a href="{% url 'logout' %}">Logout</a>
             {% else %}
                 <a href="{% url 'login' %}">Login</a>
                 <a href="{% url 'register' %}">Register</a>
@@ -155,16 +178,20 @@
         <form method="GET" action="{% url 'search' %}">
             <input type="text" name="query" placeholder="Search affirmations..." class="search-bar" value="{{ request.GET.query }}">
             
-            <!-- Category Dropdown -->
             <select name="category" class="category-dropdown">
                 <option value="">All Categories</option>
-                <option value="Motivation" {% if request.GET.category == 'Motivation' %}selected{% endif %}>Motivation</option>
-                <option value="Positivity" {% if request.GET.category == 'Positivity' %}selected{% endif %}>Positivity</option>
-                <option value="Growth" {% if request.GET.category == 'Growth' %}selected{% endif %}>Growth</option>
-                <option value="Self-Care" {% if request.GET.category == 'Self-Care' %}selected{% endif %}>Self-Care</option>
-                <option value="Mindfulness" {% if request.GET.category == 'Mindfulness' %}selected{% endif %}>Mindfulness</option>
-                <option value="Confidence" {% if request.GET.category == 'Confidence' %}selected{% endif %}>Confidence</option>
+                <option value="Success and Achievement" {% if request.GET.category == 'Success and Achievement' %}selected{% endif %}>Success and Achievement</option>
+                <option value="Self-Love" {% if request.GET.category == 'Self-Love' %}selected{% endif %}>Self-Love</option>
+                <option value="Health and Wellness" {% if request.GET.category == 'Health and Wellness' %}selected{% endif %}>Health and Wellness</option>
+                <option value="Manifestation and Abundance" {% if request.GET.category == 'Manifestation and Abundance' %}selected{% endif %}>Manifestation and Abundance</option>
                 <option value="Gratitude" {% if request.GET.category == 'Gratitude' %}selected{% endif %}>Gratitude</option>
+                <option value="Confidence and Personal Power" {% if request.GET.category == 'Confidence and Personal Power' %}selected{% endif %}>Confidence and Personal Power</option>
+                <option value="Love and Relationships" {% if request.GET.category == 'Love and Relationships' %}selected{% endif %}>Love and Relationships</option>
+                <option value="Goal-Oriented" {% if request.GET.category == 'Goal-Oriented' %}selected{% endif %}>Goal-Oriented</option>
+                <option value="Positive Thinking" {% if request.GET.category == 'Positive Thinking' %}selected{% endif %}>Positive Thinking</option>
+                <option value="Career and Success" {% if request.GET.category == 'Career and Success' %}selected{% endif %}>Career and Success</option>
+                <option value="Forgiveness and Healing" {% if request.GET.category == 'Forgiveness and Healing' %}selected{% endif %}>Forgiveness and Healing</option>
+                <option value="Spiritual" {% if request.GET.category == 'Spiritual' %}selected{% endif %}>Spiritual</option>
             </select>
             
             <button type="submit" class="filter-button">Search</button>
@@ -178,10 +205,13 @@
                     <h3>{{ affirmation.affirmation }}</h3>
                     <p class="rating">Rating: {{ affirmation.rating }}⭐</p>
                     <p>Category: {{ affirmation.category }}</p>
+                    <p>Submitted by: {% if affirmation.user %}{{ affirmation.user.username }}{% else %}Anonymous{% endif %}</p>
                 </div>
             {% endfor %}
         {% else %}
-            <p>No results found.</p>
+            <div class="affirmation-box">
+                <p>No results found.</p>
+            </div>
         {% endif %}
     </div>
 </body>

@@ -5,96 +5,228 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suggest an Affirmation</title>
     <style>
-        /* Inline styling for simplicity, move to CSS file for better organization */
-        body {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            color: white;
+        }
+
+        body {
             min-height: 100vh;
             background: linear-gradient(90deg, #7b2cbf, #ff6f61);
-            background-color: #f4f4f9;
-            margin: 0;
+            padding-top: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .container {
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             width: 100%;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            white-space: nowrap;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            width: 90%;
             max-width: 600px;
-            background-color: #ffffff;
+            background-color: rgba(0, 0, 0, 0.5);
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
+            margin: 20px auto;
         }
+
         .container h1 {
             margin-bottom: 1.5rem;
-            color: #333;
+            font-size: 32px;
         }
+
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             text-align: left;
         }
+
         label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: bold;
-            color: #555;
+            font-size: 16px;
         }
-        input[type="text"], select, textarea {
+
+        textarea, select {
             width: 100%;
-            padding: 0.5rem;
-            font-size: 1rem;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
         }
+
         textarea {
             resize: vertical;
-            min-height: 100px;
+            min-height: 120px;
         }
-        .submit-btn {
-            background-color: #4CAF50;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-            border: none;
-            border-radius: 5px;
+
+        textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        select {
             cursor: pointer;
-            transition: background-color 0.3s;
         }
+
+        select option {
+            background: #333;
+            color: white;
+            padding: 8px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: white;
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+            margin-top: 20px;
+        }
+
         .submit-btn:hover {
-            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        .messages {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1001;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .messages .success,
+        .messages .error {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .messages .success {
+            background-color: rgba(40, 167, 69, 0.9);
+        }
+
+        .messages .error {
+            background-color: rgba(220, 53, 69, 0.9);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            .nav {
+                gap: 15px;
+            }
+
+            .nav a {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <header>
+        <a href="{% url 'home' %}" class="logo">Daily Affirmations</a>
+        <div class="nav">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'search' %}">Search</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}">Profile</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            {% endif %}
+        </div>
+    </header>
+
     <div class="container">
         <h1>Suggest an Affirmation</h1>
         <form action="{% url 'suggest_affirmation' %}" method="post">
             {% csrf_token %}
 
-            <!-- Affirmation Text Input -->
             <div class="form-group">
                 <label for="affirmation-text">Affirmation</label>
                 <textarea name="affirmation_text" id="affirmation-text" required placeholder="Write your affirmation here..."></textarea>
             </div>
 
-            <!-- Category Select Dropdown -->
             <div class="form-group">
                 <label for="category">Category</label>
                 <select name="category" id="category" required>
                     <option value="" disabled selected>Select a category</option>
-                    <option value="Motivation">Motivation</option>
-                    <option value="Positivity">Positivity</option>
-                    <option value="Growth">Growth</option>
-                    <option value="Self-Care">Self-Care</option>
-                    <option value="Mindfulness">Mindfulness</option>
-                    <option value="Confidence">Confidence</option>
+                    <option value="Success and Achievement">Success and Achievement</option>
+                    <option value="Self-Love">Self-Love</option>
+                    <option value="Health and Wellness">Health and Wellness</option>
+                    <option value="Manifestation and Abundance">Manifestation and Abundance</option>
                     <option value="Gratitude">Gratitude</option>
-                    
-                    <!-- Add more categories as needed -->
+                    <option value="Confidence and Personal Power">Confidence and Personal Power</option>
+                    <option value="Love and Relationships">Love and Relationships</option>
+                    <option value="Goal-Oriented">Goal-Oriented</option>
+                    <option value="Positive Thinking">Positive Thinking</option>
+                    <option value="Career and Success">Career and Success</option>
+                    <option value="Forgiveness and Healing">Forgiveness and Healing</option>
+                    <option value="Spiritual">Spiritual</option>
                 </select>
             </div>
 
-            <!-- Submit Button -->
             <button type="submit" class="submit-btn">Submit Affirmation</button>
         </form>
     </div>

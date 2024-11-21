@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import auth
 from django.contrib import messages
@@ -6,17 +6,39 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import Affirmation, UserProfile
 import random
+import logging
 
-def home_view(request):
-    affirmation = Affirmation.objects.order_by('?').first()  # Random affirmation
-    return render(request, 'home.html', {'affirmation': affirmation})
+logger = logging.getLogger(__name__)
 
 def home(request):
-    # Fetch a random affirmation from the database
-    daily_affirmation = random.choice(Affirmation.objects.all())
-    context = {
-        'daily_affirmation': daily_affirmation,
-    }
+    context = {}
+    try:
+        # Get all affirmations
+        affirmations = Affirmation.objects.all()
+        
+        if affirmations.exists():
+            # Get a random affirmation
+            affirmation = random.choice(affirmations)
+        else:
+            # Create a default affirmation if none exist
+            affirmation = Affirmation.objects.create(
+                affirmation="I am capable of achieving anything I set my mind to.",
+                category="Motivation",
+                rating=5
+            )
+        
+        context['affirmation'] = affirmation
+        
+    except Exception as e:
+        logger.error(f"Error in home view: {str(e)}")
+        # Provide a fallback affirmation
+        context['affirmation'] = {
+            'affirmation': "Welcome to Daily Affirmations!",
+            'rating': 5,
+            'category': 'General'
+        }
+        messages.error(request, "There was an issue loading the affirmation. Please try again later.")
+    
     return render(request, 'home.html', context)
     
 def login_view(request):
@@ -28,9 +50,9 @@ def login_view(request):
         user = auth.authenticate(request, username=username, password=password)
         
         if user is not None:
-            auth.login(request, user)  # Log the user in
+            auth.login(request, user)
             messages.success(request, "You have successfully logged in.")
-            return redirect('home')  # Redirect to the home page
+            return redirect('home')
         else:
             messages.error(request, "Invalid username or password.")
             return render(request, 'login.html')
@@ -57,10 +79,11 @@ def register(request):
         
         # Create the user profile with encrypted password
         user_profile = UserProfile(user=user, age=age, email=email)
-        user_profile.set_password(password)  # This will encrypt and save the password
+        user_profile.set_password(password)
+        user_profile.save()
         
         messages.success(request, "Your account has been created successfully.")
-        return redirect('login')  # Redirect to login page after registration
+        return redirect('login')
 
     return render(request, 'register.html')
 
@@ -102,12 +125,14 @@ def suggest_affirmation(request):
 
 @login_required
 def profile(request):
-    user_profile = UserProfile.objects.get(user=request.user)
-    suggested_affirmations = Affirmation.objects.filter(user=request.user)
-    return render(request, 'profile.html', {
+    user_profile = get_object_or_404(UserProfile, user=request.user)
+    suggested_affirmations = Affirmation.objects.filter(user=request.user).order_by('-id')
+    
+    context = {
         'user_profile': user_profile,
-        'suggested_affirmations': suggested_affirmations
-    })
+        'suggested_affirmations': suggested_affirmations,
+    }
+    return render(request, 'profile.html', context)
 
 def logout_view(request):
     auth.logout(request)

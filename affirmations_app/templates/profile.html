@@ -14,49 +14,96 @@
         }
 
         body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background: linear-gradient(135deg, #6d28a1, #ff5f6d);
+            min-height: 100vh;
+            background: linear-gradient(90deg, #7b2cbf, #ff6f61);
+            padding-top: 80px;
         }
 
-        .container {
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .logo {
             font-size: 24px;
             letter-spacing: 2px;
-            margin-bottom: 20px;
+            text-decoration: none;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            transition: opacity 0.3s;
+        }
+
+        .nav a:hover {
+            opacity: 0.8;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         h1 {
             font-size: 26px;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             font-weight: bold;
-        }
-
-        p {
-            font-size: 16px;
-            margin-bottom: 10px;
-            line-height: 1.6;
         }
 
         .info {
             text-align: left;
             margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
         }
 
         .info p {
             font-size: 16px;
-            padding: 5px 0;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info p:last-child {
+            border-bottom: none;
+        }
+
+        .affirmations-section {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .affirmation-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        .affirmation-card p {
+            margin: 5px 0;
         }
 
         .button-container {
@@ -76,26 +123,87 @@
             cursor: pointer;
             background: linear-gradient(90deg, #7b2cbf, #ff6f61);
             transition: transform 0.2s;
+            text-decoration: none;
         }
 
         .btn:hover {
             transform: scale(1.05);
         }
+
+        .messages {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1001;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .messages .success,
+        .messages .error {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .messages .success {
+            background-color: rgba(40, 167, 69, 0.9);
+        }
+
+        .messages .error {
+            background-color: rgba(220, 53, 69, 0.9);
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">DAILY AFFIRMATION</div>
-        <h1>Profile</h1>
-        <div class="info">
-            <p><strong>Name:</strong> John Doe</p>
-            <p><strong>Email:</strong> johndoe@example.com</p>
-            <p><strong>Member Since:</strong> January 2022</p>
-            <p><strong>Total Affirmations Submitted:</strong> 15</p>
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <header>
+        <a href="{% url 'home' %}" class="logo">Daily Affirmations</a>
+        <div class="nav">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'search' %}">Search</a>
+            <a href="{% url 'suggest_affirmation' %}">Suggest</a>
+            <a href="{% url 'logout' %}">Logout</a>
         </div>
+    </header>
+
+    <div class="container">
+        <h1>My Profile</h1>
+        <div class="info">
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user_profile.email }}</p>
+            <p><strong>Age:</strong> {{ user_profile.age }}</p>
+            <p><strong>Member Since:</strong> {{ user.date_joined|date:"F Y" }}</p>
+            <p><strong>Total Affirmations Submitted:</strong> {{ suggested_affirmations|length }}</p>
+        </div>
+
+        {% if suggested_affirmations %}
+        <div class="affirmations-section">
+            <h2>My Submitted Affirmations</h2>
+            {% for affirmation in suggested_affirmations %}
+            <div class="affirmation-card">
+                <p><strong>Affirmation:</strong> {{ affirmation.affirmation }}</p>
+                <p><strong>Category:</strong> {{ affirmation.category }}</p>
+                <p><strong>Rating:</strong> {{ affirmation.rating }}⭐</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <div class="button-container">
-            <button class="btn" onclick="window.location.href='/edit-profile'">Edit Profile</button>
-            <button class="btn" onclick="window.location.href='/logout'">Logout</button>
+            <a href="{% url 'suggest_affirmation' %}" class="btn">Submit New Affirmation</a>
+            <a href="{% url 'logout' %}" class="btn">Logout</a>
         </div>
     </div>
 </body>
