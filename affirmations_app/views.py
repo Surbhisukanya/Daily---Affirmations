@@ -86,7 +86,8 @@ def register(request):
         return redirect('login')
 
     return render(request, 'register.html')
-
+    
+@login_required
 def search_affirmations(request):
     query = request.GET.get('query', '')
     category = request.GET.get('category', '')
