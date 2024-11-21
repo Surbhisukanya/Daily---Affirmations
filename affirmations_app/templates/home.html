@@ -14,81 +14,113 @@
 
         body {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center; /* Center items horizontally */
+            justify-content: flex-start; /* Align items to the top */
             height: 100vh;
             background: linear-gradient(90deg, #7b2cbf, #ff6f61);
             color: white;
-            text-align: center;
-        }
-
-        .container {
-            width: 80%;
-            max-width: 800px;
+            text-align: left; /* Align text to the left */
+            padding: 0; /* Remove padding from body */
         }
 
         header {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-between; /* Space between logo and nav */
             align-items: center;
-            padding: 20px 0;
+            width: 100%; /* Full width of the viewport */
+            padding: 10px 20px; /* Add padding for spacing */
+            position: absolute; /* Position the header absolutely */
+            top: 0; /* Align to the top */
+            left: 0; /* Align to the left */
+            z-index: 1000; /* Ensure it stays above other content */
         }
 
         .logo {
-            font-size: 16px;
+            font-size:35px;
             letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
         }
 
         .nav a {
             color: white;
             margin-left: 20px;
             text-decoration: none;
-            font-size: 14px;
+            font-size: 20px;
+        }
+
+        .search-icon {
+            margin-left: 20px;
+            cursor: pointer;
+            font-size: 20px; /* Adjust size as needed */
         }
 
         main {
-            margin-top: 50px;
+            width: 100%; /* Full width */
+            max-width: 800px; /* Limit the maximum width */
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+            margin-top: 250px; /* Add margin to avoid overlap with header */
+            display: flex; /* Use flexbox for centering */
+            flex-direction: column; /* Stack children vertically */
+            align-items: center; /* Center children horizontally */
         }
 
         h1 {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: bold;
             line-height: 1.5;
+            margin: 20px 0;
+            text-align: center; /* Center the text */
         }
 
         .details {
             display: flex;
             justify-content: space-between;
-            margin: 20px 0;
+            margin: 10px 0;
+            font-size: 16px;
+            width: 100%; /* Full width for details */
+            padding: 0 20px; /* Add padding for spacing */
         }
 
         .details p {
-            font-size: 16px;
+            margin: 0;
         }
 
-        .submit-msg {
-            font-size: 14px;
+        .footer-msg {
+            font-size: 20px;
             opacity: 0.7;
+            position: absolute;
+            bottom: 20px; /* Position at the bottom of the viewport */
+            left: 50%;
+            transform: translateX(-50%);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <span class="logo">DAILY AFFIRMATION</span>
-            <div class="nav">
-                <a href="#">Login</a>
-                <a href="#">Sign Up</a>
-            </div>
-        </header>
-        <main>
-            <h1>I USE OBSTACLES TO MOTIVATE ME TO LEARN AND GROW.</h1>
-            <div class="details">
-                <p>Rating: 4.3</p>
-                <p>Submitted by: John Doe</p>
-            </div>
-            <p class="submit-msg">Login to submit your own affirmation</p>
-        </main>
-    </div>
+    <header>
+        <span class="logo">Daily Affirmations</span>
+        <div class="nav">
+            <a href="search.html" class="search-icon">🔍</a> <!-- Link to search.html -->
+            <a href="login.html">Login</a> <!-- Link to login.html -->
+            <a href="register.html">Register</a> <!-- Link to register.html -->
+        </div>
+    </header>
+    <main>
+        <h1>{{ affirmation.text }}</h1>
+        <div class="details">
+            <p>Rating: {{ affirmation.rating }}⭐</p>
+            <p>Submitted by: {{ affirmation.submitted_by }}</p>
+        </div>
+    </main>
+    <p class="footer-msg">Login to submit your own affirmation</p> <!-- Moved outside of main -->
 </body>
 </html>
