@@ -15,63 +15,71 @@
         body {
             display: flex;
             flex-direction: column;
-            align-items: center; /* Center items horizontally */
-            justify-content: flex-start; /* Align items to the top */
+            align-items: center;
+            justify-content: flex-start;
             height: 100vh;
             background: linear-gradient(90deg, #7b2cbf, #ff6f61);
             color: white;
-            text-align: left; /* Align text to the left */
-            padding: 0; /* Remove padding from body */
+            text-align: left;
+            padding: 0;
         }
 
         header {
             display: flex;
-            justify-content: space-between; /* Space between logo and nav */
+            justify-content: space-between;
             align-items: center;
-            width: 100%; /* Full width of the viewport */
-            padding: 10px 20px; /* Add padding for spacing */
-            position: absolute; /* Position the header absolutely */
-            top: 0; /* Align to the top */
-            left: 0; /* Align to the left */
-            z-index: 1000; /* Ensure it stays above other content */
+            width: 100%;
+            padding: 10px 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .logo {
-            font-size:35px;
+            font-size: 35px;
             letter-spacing: 2px;
             font-weight: bold;
+            text-decoration: none;
+            color: white;
         }
 
         .nav {
             display: flex;
             align-items: center;
+            gap: 20px;
         }
 
         .nav a {
             color: white;
-            margin-left: 20px;
             text-decoration: none;
             font-size: 20px;
+            transition: opacity 0.3s;
+        }
+
+        .nav a:hover {
+            opacity: 0.8;
         }
 
         .search-icon {
             margin-left: 20px;
             cursor: pointer;
-            font-size: 20px; /* Adjust size as needed */
+            font-size: 20px;
         }
 
         main {
-            width: 100%; /* Full width */
-            max-width: 800px; /* Limit the maximum width */
+            width: 100%;
+            max-width: 800px;
             background: rgba(0, 0, 0, 0.5);
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             position: relative;
-            margin-top: 250px; /* Add margin to avoid overlap with header */
-            display: flex; /* Use flexbox for centering */
-            flex-direction: column; /* Stack children vertically */
-            align-items: center; /* Center children horizontally */
+            margin-top: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         h1 {
@@ -79,7 +87,7 @@
             font-weight: bold;
             line-height: 1.5;
             margin: 20px 0;
-            text-align: center; /* Center the text */
+            text-align: center;
         }
 
         .details {
@@ -87,8 +95,8 @@
             justify-content: space-between;
             margin: 10px 0;
             font-size: 16px;
-            width: 100%; /* Full width for details */
-            padding: 0 20px; /* Add padding for spacing */
+            width: 100%;
+            padding: 0 20px;
         }
 
         .details p {
@@ -99,28 +107,81 @@
             font-size: 20px;
             opacity: 0.7;
             position: absolute;
-            bottom: 20px; /* Position at the bottom of the viewport */
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
+        }
+
+        .messages {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1001;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .messages .success,
+        .messages .error {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            text-align: center;
+            animation: fadeOut 5s forwards;
+        }
+
+        .messages .success {
+            background-color: rgba(40, 167, 69, 0.9);
+        }
+
+        .messages .error {
+            background-color: rgba(220, 53, 69, 0.9);
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; }
         }
     </style>
 </head>
 <body>
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <header>
-        <span class="logo">Daily Affirmations</span>
+        <a href="{% url 'home' %}" class="logo">Daily Affirmations</a>
         <div class="nav">
-            <a href="search.html" class="search-icon">🔍</a> <!-- Link to search.html -->
-            <a href="login.html">Login</a> <!-- Link to login.html -->
-            <a href="register.html">Register</a> <!-- Link to register.html -->
+            <a href="{% url 'search' %}" class="search-icon">🔍</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}">Profile</a>
+                <a href="{% url 'suggest_affirmation' %}">Suggest</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}">Register</a>
+            {% endif %}
         </div>
     </header>
     <main>
-        <h1>{{ affirmation.text }}</h1>
+        <h1>{{ affirmation.affirmation }}</h1>
         <div class="details">
             <p>Rating: {{ affirmation.rating }}⭐</p>
-            <p>Submitted by: {{ affirmation.submitted_by }}</p>
+            {% if affirmation.user %}
+                <p>Submitted by: {{ affirmation.user.username }}</p>
+            {% endif %}
         </div>
     </main>
-    <p class="footer-msg">Login to submit your own affirmation</p> <!-- Moved outside of main -->
+    {% if not user.is_authenticated %}
+        <p class="footer-msg">Login to submit your own affirmation</p>
+    {% endif %}
 </body>
 </html>

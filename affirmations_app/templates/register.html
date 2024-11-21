@@ -84,10 +84,43 @@
         .register-btn:hover {
             background: linear-gradient(45deg, #2575fc, #6a11cb);
         }
+
+        /* Messages styling */
+        .messages {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .messages .error {
+            background-color: rgba(255, 0, 0, 0.2);
+            color: #fff;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .messages .success {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: #fff;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        /* Login link styling */
+        .login-link {
+            margin-top: 20px;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .login-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-
     <div class="register-container">
         <!-- Logo -->
         <div class="logo">
@@ -96,6 +129,17 @@
         
         <!-- Title -->
         <h2>Register Your Account</h2>
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
         
         <!-- Register Form -->
         <form action="{% url 'register' %}" method="post">
@@ -123,7 +167,11 @@
 
             <button type="submit" class="register-btn">Register</button>
         </form>
-    </div>
 
+        <!-- Login Link -->
+        <p>
+            <a href="{% url 'login' %}" class="login-link">Already have an account? Login here</a>
+        </p>
+    </div>
 </body>
 </html>

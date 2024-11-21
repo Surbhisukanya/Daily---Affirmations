@@ -15,12 +15,41 @@
         body {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
             background: linear-gradient(90deg, #7b2cbf, #ff6f61);
             color: white;
             text-align: center;
             flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
         }
 
         .search-container {
@@ -48,6 +77,11 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .filter-button:hover {
+            background: #ff5f4f;
         }
 
         .results-container {
@@ -56,10 +90,12 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
+            padding: 0 20px;
         }
 
         .affirmation-box {
-            width: 75%;
+            width: 100%;
+            max-width: 600px;
             padding: 15px;
             margin: 10px 0;
             background: rgba(255, 255, 255, 0.1);
@@ -93,24 +129,42 @@
             background: white;
             color: #333;
         }
+
+        h1 {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
+    <header>
+        <a href="{% url 'home' %}" class="logo">Daily Affirmations</a>
+        <div class="nav">
+            <a href="{% url 'home' %}">Home</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}">Profile</a>
+                <a href="{% url 'suggest_affirmation' %}">Suggest</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}">Register</a>
+            {% endif %}
+        </div>
+    </header>
+
     <div class="search-container">
         <h1>Search Affirmations</h1>
         <form method="GET" action="{% url 'search' %}">
-            <input type="text" name="query" placeholder="Search affirmations..." class="search-bar">
+            <input type="text" name="query" placeholder="Search affirmations..." class="search-bar" value="{{ request.GET.query }}">
             
             <!-- Category Dropdown -->
             <select name="category" class="category-dropdown">
                 <option value="">All Categories</option>
-                <option value="Motivation">Motivation</option>
-                <option value="Positivity">Positivity</option>
-                <option value="Growth">Growth</option>
-                <option value="Self-Care">Self-Care</option>
-                <option value="Mindfulness">Mindfulness</option>
-                <option value="Confidence">Confidence</option>
-                <option value="Gratitude">Gratitude</option>
+                <option value="Motivation" {% if request.GET.category == 'Motivation' %}selected{% endif %}>Motivation</option>
+                <option value="Positivity" {% if request.GET.category == 'Positivity' %}selected{% endif %}>Positivity</option>
+                <option value="Growth" {% if request.GET.category == 'Growth' %}selected{% endif %}>Growth</option>
+                <option value="Self-Care" {% if request.GET.category == 'Self-Care' %}selected{% endif %}>Self-Care</option>
+                <option value="Mindfulness" {% if request.GET.category == 'Mindfulness' %}selected{% endif %}>Mindfulness</option>
+                <option value="Confidence" {% if request.GET.category == 'Confidence' %}selected{% endif %}>Confidence</option>
+                <option value="Gratitude" {% if request.GET.category == 'Gratitude' %}selected{% endif %}>Gratitude</option>
             </select>
             
             <button type="submit" class="filter-button">Search</button>
@@ -121,8 +175,8 @@
         {% if affirmations %}
             {% for affirmation in affirmations %}
                 <div class="affirmation-box">
-                    <h3>{{ affirmation.text }}</h3>
-                    <p class="rating">Rating: {{ affirmation.rating }}</p>
+                    <h3>{{ affirmation.affirmation }}</h3>
+                    <p class="rating">Rating: {{ affirmation.rating }}⭐</p>
                     <p>Category: {{ affirmation.category }}</p>
                 </div>
             {% endfor %}
