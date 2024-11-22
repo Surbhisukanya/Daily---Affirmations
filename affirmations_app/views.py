@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib import auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+#from django.db.models import Q
 from .models import Affirmation, UserProfile
 import random
 import logging
@@ -110,7 +110,6 @@ def register(request):
 
     return render(request, 'register.html')
     
-@login_required
 def search_affirmations(request):
     query = request.GET.get('query', '')
     category = request.GET.get('category', '')
