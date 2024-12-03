@@ -4,7 +4,7 @@ from django.contrib import auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 #from django.db.models import Q
-from .models import Affirmation, UserProfile
+from .models import Affirmation, UserProfile, UserRating
 import random
 import logging
 
@@ -13,32 +13,24 @@ logger = logging.getLogger(__name__)
 def home(request):
     context = {}
     try:
-        # Get all affirmations
         affirmations = Affirmation.objects.all()
-        
         if affirmations.exists():
-            # Get a random affirmation
             affirmation = random.choice(affirmations)
+            affirmation.update_average_rating()
         else:
-            # Create a default affirmation if none exist
             affirmation = Affirmation.objects.create(
                 affirmation="I am capable of achieving anything I set my mind to.",
-                category="Motivation",
-                rating=4  # Set default rating to 4
+                category="Motivation"
             )
-        
         context['affirmation'] = affirmation
-        
     except Exception as e:
         logger.error(f"Error in home view: {str(e)}")
-        # Provide a fallback affirmation
         context['affirmation'] = {
             'affirmation': "Welcome to Daily Affirmations!",
-            'rating': 4,  # Set default rating to 4
+            'rating': 0,
             'category': 'General'
         }
         messages.error(request, "There was an issue loading the affirmation. Please try again later.")
-    
     return render(request, 'home.html', context)
 
 @login_required
@@ -46,22 +38,22 @@ def rate_affirmation(request, affirmation_id):
     if request.method == 'POST':
         affirmation = get_object_or_404(Affirmation, id=affirmation_id)
         try:
-            # Get rating from POST data, default to 4 if not provided
             rating = int(request.POST.get('rating', 4))
-            # Ensure rating is between 1 and 5
             rating = max(1, min(5, rating))
             
-            # Update the affirmation's rating
-            affirmation.rating = rating
-            affirmation.save()
+            UserRating.objects.update_or_create(
+                user=request.user,
+                affirmation=affirmation,
+                defaults={'rating': rating}
+            )
             
+            affirmation.update_average_rating()
             messages.success(request, "Rating submitted successfully!")
         except ValueError:
             messages.error(request, "Invalid rating value.")
         except Exception as e:
             logger.error(f"Error in rate_affirmation view: {str(e)}")
             messages.error(request, "There was an error submitting your rating.")
-    
     return redirect('home')
     
 def login_view(request):

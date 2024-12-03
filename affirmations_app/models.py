@@ -5,8 +5,24 @@ from django.contrib.auth.hashers import make_password, check_password
 class Affirmation(models.Model):
     affirmation = models.TextField()
     category = models.CharField(max_length=100)
-    rating = models.IntegerField(default=0)
+    rating = models.FloatField(default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+
+    def update_average_rating(self):
+        ratings = UserRating.objects.filter(affirmation=self)
+        if ratings.exists():
+            avg_rating = ratings.aggregate(models.Avg('rating'))['rating__avg']
+            self.rating = round(avg_rating, 1)
+            self.save()
+
+class UserRating(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    affirmation = models.ForeignKey(Affirmation, on_delete=models.CASCADE)
+    rating = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'affirmation')
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
